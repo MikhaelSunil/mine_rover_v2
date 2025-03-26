@@ -1,0 +1,203 @@
+<?xml version="1.0" ?>
+<robot name="rover_desc" xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+<xacro:property name="body_color1" value="Gazebo/Red" />
+<xacro:property name="body_color2" value="Gazebo/Black" />
+
+
+<gazebo reference="base_link">
+  <material>${body_color1}</material>
+  <mu1>1500</mu1>
+  <mu2>1500</mu2>
+  <self_collide>true</self_collide>
+  <gravity>true</gravity>
+</gazebo>
+
+<gazebo reference="left_wheel1_1">
+  <material>${body_color2}</material>
+  <mu1>1500</mu1>
+  <mu2>1500</mu2>
+  <self_collide>true</self_collide>
+</gazebo>
+
+<gazebo reference="left_wheel2_1">
+  <material>${body_color2}</material>
+  <mu1>1500</mu1>
+  <mu2>1500</mu2>
+  <self_collide>true</self_collide>
+</gazebo>
+
+<gazebo reference="left_wheel3__1">
+  <material>${body_color2}</material>
+  <mu1>1500</mu1>
+  <mu2>1500</mu2>
+  <self_collide>true</self_collide>
+</gazebo>
+
+<gazebo reference="right_wheel3_1">
+  <material>${body_color2}</material>
+  <mu1>750</mu1>
+  <mu2>750</mu2>
+  <self_collide>true</self_collide>
+</gazebo>
+
+<gazebo reference="right_wheel2_1">
+  <material>${body_color2}</material>
+  <mu1>1500</mu1>
+  <mu2>1500</mu2>
+  <self_collide>true</self_collide>
+</gazebo>
+
+<gazebo reference="right_wheel1_1">
+  <material>${body_color2}</material>
+  <mu1>1500</mu1>
+  <mu2>1500</mu2>
+  <self_collide>true</self_collide>
+</gazebo>
+
+<gazebo reference="camera_1">
+  <material>${body_color2}</material>
+  <mu1>0.2</mu1>
+  <mu2>0.2</mu2>
+  <self_collide>true</self_collide>
+</gazebo>
+
+<gazebo reference="lidar_1_1">
+  <material>${body_color2}</material>
+  <mu1>0.2</mu1>
+  <mu2>0.2</mu2>
+  <self_collide>true</self_collide>
+</gazebo>
+
+<!-- Differential Drive Plugin -->
+  <gazebo>
+    <plugin name="gz::sim::systems::DiffDrive" filename="gz-sim-diff-drive-system">
+      <!-- Command input topic -->
+      <topic>/cmd_vel</topic>
+
+      <!-- Wheel joints -->
+      <left_joint>lw1revolute</left_joint>
+      <left_joint>lw2revolute</left_joint>
+      <left_joint>lw3revolute</left_joint>
+      <right_joint>rw1revolute</right_joint>
+      <right_joint>rw2revolute</right_joint>
+      <right_joint>rw3revolute</right_joint>
+
+      <!-- Wheel parameters -->
+      <wheel_separation>0.27</wheel_separation> <!-- Distance between left and right wheels -->
+      <wheel_radius>0.065</wheel_radius> <!-- Radius of the wheels -->
+
+      <!-- Control parameters -->
+      <max_linear_velocity>5.0</max_linear_velocity> <!-- Max linear velocity in m/s -->
+      <max_angular_velocity>3.5</max_angular_velocity> <!-- Max angular velocity in rad/s -->
+      <max_linear_acceleration>5.0</max_linear_acceleration> <!-- Max linear acceleration in m/s^2 -->
+      <max_angular_acceleration>3.5</max_angular_acceleration> <!-- Max angular acceleration in rad/s^2 -->
+
+      <!-- Odometry parameters -->
+      <odom_topic>/odom</odom_topic>
+   <odom_frame>odom</odom_frame>
+      <tf_topic>tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <robot_base_frame>base_link</robot_base_frame> 
+      <child_frame_id>base_link</child_frame_id>
+  <publish_odom>false</publish_odom>   
+      <publish_odom_tf>false</publish_odom_tf>
+      <publish_wheel_tf>false</publish_wheel_tf>
+      <odom_publish_frequency>30</odom_publish_frequency><!-- Frequency in Hz -->
+    </plugin>
+
+
+  <!-- Joint State Publisher Plugin -->
+  
+    <plugin name="gz::sim::systems::JointStatePublisher" filename="gz-sim-joint-state-publisher-system">
+      <topic>/joint_states</topic> <!-- Topic to publish joint states -->
+      <!-- List all wheel joints -->
+      <joint_name>lw1revolute</joint_name>
+      <joint_name>lw2revolute</joint_name>
+      <joint_name>lw3revolute</joint_name>
+      <joint_name>rw1revolute</joint_name>
+      <joint_name>rw2revolute</joint_name>
+      <joint_name>rw3revolute</joint_name>
+    </plugin>
+    </gazebo>
+<!-- lidar  -->
+
+        <gazebo reference="lidar_1_1">
+    <sensor name="gpu_lidar" type="gpu_lidar">
+    <pose> 0 0 0 0 0 0 </pose>
+      <update_rate>10</update_rate>
+      <topic>scan</topic>
+      <gz_frame_id>lidar_1_1</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <!--(max_angle-min_angle)/samples * resolution -->
+            <resolution>1</resolution>
+            <min_angle>-1.57156</min_angle>
+            <max_angle>1.57156</max_angle>
+          </horizontal>
+          <!-- Dirty hack for fake lidar detections with ogre 1 rendering in VM -->
+      <!--     <vertical>
+              <samples>3</samples>
+              <min_angle>-0.001</min_angle>
+              <max_angle>0.001</max_angle>
+          </vertical> -->
+        </scan>
+        <range>
+          <min>0.10</min>
+          <max>30.0</max>
+          <resolution>0.01</resolution>
+        </range>
+        <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+        </noise>
+        <frame_id>lidar_1_1</frame_id>
+      </lidar>
+      <always_on>true</always_on>
+      <visualize>true</visualize>
+    </sensor>
+    <plugin
+  filename="gz-sim-sensors-system"
+  name="gz::sim::systems::Sensors">
+  <render_engine>ogre2</render_engine>
+</plugin>
+
+
+
+  </gazebo>
+       <gazebo reference="camera_1">
+<sensor name="rgbd_camera" type="camera">
+  <pose>0 0 0 0 0 0</pose> <!-- Adjust the pose as needed -->
+  <camera>
+    <horizontal_fov>1.047</horizontal_fov> <!-- Field of view -->
+    <image>
+      <width>640</width>
+      <height>480</height>
+      <format>R8G8B8</format>
+    </image>
+    <clip>
+      <near>0.1</near>
+      <far>100</far>
+    </clip>
+    <depth_camera>
+      <format>FLOAT32</format>
+    </depth_camera>
+  </camera>
+  <always_on>true</always_on>
+  <frame_name>camera_link_optical</frame_name>
+  <update_rate>30</update_rate>
+</sensor>
+
+    <plugin
+  filename="gz-sim-sensors-system"
+  name="gz::sim::systems::Sensors">
+  <render_engine>ogre2</render_engine>
+</plugin>
+
+  </gazebo>
+
+
+</robot>

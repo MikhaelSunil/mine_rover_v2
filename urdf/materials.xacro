@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<robot name="rover_desc" xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+  <material name="Red">
+    <color rgba="0.8 0.0 0.0 1.0"/> <!-- Adjust the RGB values as needed -->
+  </material>
+  <!-- Define a black material -->
+  <material name="Black">
+    <color rgba="0.0 0.0 0.0 1.0"/>
+  </material>
+
+</robot>
